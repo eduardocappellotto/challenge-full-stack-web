@@ -36,9 +36,6 @@ export class StudentService {
     }
 
     async remove(ra: string): Promise<void> {
-        const result = await this.studentRepository.softDelete(ra);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Student with RA '${ra}' not found`);
-        }
+        await this.studentRepository.softDelete(ra);
     }
 }

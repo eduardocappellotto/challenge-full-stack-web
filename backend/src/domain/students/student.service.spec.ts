@@ -86,7 +86,7 @@ describe('StudentService', () => {
     describe('update', () => {
         it('should update a student by RA', async () => {
             const ra = '123456';
-            const updateStudentDto: UpdateStudentDto = { /* Fill with mock data */ };
+            const updateStudentDto: UpdateStudentDto = mockStudent;
             const student = new Student();
             jest.spyOn(repository, 'findOne').mockResolvedValue(student);
             jest.spyOn(repository, 'save').mockResolvedValue(student);
@@ -100,7 +100,7 @@ describe('StudentService', () => {
     describe('remove', () => {
         it('should remove a student by RA', async () => {
             const ra = '123456';
-            jest.spyOn(repository, 'delete').mockResolvedValue(undefined);
+            jest.spyOn(repository, 'softDelete').mockResolvedValue(undefined);
 
             const result = await service.remove(ra);
 
