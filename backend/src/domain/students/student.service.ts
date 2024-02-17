@@ -1,5 +1,4 @@
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Student } from './entitites/student.entity';
@@ -22,20 +21,24 @@ export class StudentService {
         return await this.studentRepository.find();
     }
 
-    async findOne(ra: string): Promise<Student | undefined> {
-        return await this.studentRepository.findOne({ where: { ra } });
+    async findOne(ra: string): Promise<Student> {
+        const student = await this.studentRepository.findOne({ where: { ra } });
+        if (!student) {
+            throw new NotFoundException(`Student with RA '${ra}' not found`);
+        }
+        return student;
     }
 
     async update(ra: string, updateStudentDto: UpdateStudentDto): Promise<Student | undefined> {
-        const student = await this.studentRepository.findOne({ where: { ra } });
-        if (!student) {
-            return undefined;
-        }
+        const student = await this.findOne(ra);
         Object.assign(student, updateStudentDto);
         return await this.studentRepository.save(student);
     }
 
     async remove(ra: string): Promise<void> {
-        await this.studentRepository.delete(ra);
+        const result = await this.studentRepository.softDelete(ra);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Student with RA '${ra}' not found`);
+        }
     }
 }

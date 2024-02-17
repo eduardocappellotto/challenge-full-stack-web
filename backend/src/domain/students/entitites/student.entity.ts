@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class Student {
@@ -13,4 +13,7 @@ export class Student {
 
     @Column({ length: 14 })
     cpf: string;
+
+    @DeleteDateColumn()
+    deletedat?: Date;
 }
