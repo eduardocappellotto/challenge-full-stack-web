@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS students (
 
 -- Insert mock data into users table
 INSERT INTO users (username, password, user_type) VALUES
-('ademir', '$2a$12$xwvSn7PLtd2gHMEAY6pY8ecqnNlu6Rkhlmud0Nj/AgZQmY73fSc2m', 'administrator'),
-('estudancio', '$2a$12$79StfjvsarE.LvMB0sTQLO9UYPQOngIqNB/VX.W6lgMZXcSkBaxc2', 'student');
+('ademir', '$2a$12$xwvSn7PLtd2gHMEAY6pY8ecqnNlu6Rkhlmud0Nj/AgZQmY73fSc2m', 'admin'),
+('estudancio', '$2a$12$79StfjvsarE.LvMB0sTQLO9UYPQOngIqNB/VX.W6lgMZXcSkBaxc2', 'user');
 
 -- Insert mock data into students table
 INSERT INTO students (name, email, ra, cpf) VALUES

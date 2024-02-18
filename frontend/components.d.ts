@@ -9,8 +9,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     AMaisEducacao: typeof import('./src/components/SVG/AMaisEducacao.vue')['default']
     Class: typeof import('./src/components/SVG/Class.vue')['default']
+    GlobalErrorHandler: typeof import('./src/components/GlobalErrorHandler.vue')['default']
+    GlobalSnackbar: typeof import('./src/components/GlobalSnackbar.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Toast: typeof import('./src/components/Toast.vue')['default']
   }
 }
