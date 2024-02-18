@@ -14,7 +14,7 @@ export class AuthService {
     return {
       token: this.jwtService.sign({
         username: matchUser.username,
-        type: matchUser.user_type,
+        role: matchUser.user_type,
       })
     };
   }
