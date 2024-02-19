@@ -1,61 +1,74 @@
 <template>
-  <v-container>
-    <v-row class="mb-4 align-start">
-      <v-col class="d-flex align-start flex-wrap" cols="12" md="8">
-        <v-text-field v-model="search" label="Search" outlined dense>
-          <template #append
-            ><v-btn class="ma-2" outlined color="secondary" @click="filterData"
-              >Pesquisar</v-btn
-            >
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="d-flex align-start flex-wrap" cols="12" md="4">
-        <v-btn class="ma-2" color="primary" @click="createStudent"
-          >Cadastrar Aluno</v-btn
-        >
-      </v-col>
-    </v-row>
-
-    <v-data-table
-      :headers="headers"
-      :items="students"
-      item-key="ra"
-      :items-per-page="itemsPerPage"
-      :page="currentPage"
-      :total-items="totalStudents"
-      :server-items-length="totalStudents"
-      @update:page="fetchStudents"
-    >
-      <template v-slot:item.actions="{ item }">
-        <v-btn class="ma-2" color="secondary" @click="editStudent(item)"
-          >Editar</v-btn
-        >
-
-        <v-btn class="mx-a" color="primary" @click="dialogDelete = true"
-          >Excluir</v-btn
-        >
-
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="headline">Confirmar Exclusão</v-card-title>
-            <v-card-text>
-              Tem certeza de que deseja excluir este aluno?
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="tertiary" text @click="dialogDelete = false"
-                >Cancelar</v-btn
+  <v-card class="pa-4">
+    <v-container>
+      <v-row class="mb-4 align-start">
+        <v-col class="d-flex align-start flex-wrap" cols="12" md="8">
+          <v-text-field
+            class="mt-1"
+            single-line
+            placeholder="Digite sua busca"
+            variant="outlined"
+            dense
+            @input="handleInput"
+          >
+            <template #append
+              ><v-btn
+                class="ma-2"
+                outlined
+                color="secondary"
+                @click="filterData"
+                >Pesquisar</v-btn
               >
-              <v-btn color="error" text @click="confirmDelete(item)"
-                >Confirmar</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </template>
-    </v-data-table>
-  </v-container>
+            </template>
+          </v-text-field>
+        </v-col>
+        <v-col class="d-flex align-start flex-wrap" cols="12" md="4">
+          <v-btn class="ma-2" color="primary" @click="createStudent"
+            >Cadastrar Aluno</v-btn
+          >
+        </v-col>
+      </v-row>
+
+      <v-data-table-server
+        :loading="loading"
+        :items-per-page="itemsPerPage"
+        :headers="headers"
+        :items-length="totalStudents"
+        :items="students"
+        :search="search"
+        item-value="name"
+        @update:options="fetchStudents"
+      >
+        <template v-slot:item.actions="{ item }">
+          <v-btn class="ma-2" color="secondary" @click="editStudent(item)"
+            >Editar</v-btn
+          >
+
+          <v-btn class="mx-a" color="primary" @click="dialogDelete = true"
+            >Excluir</v-btn
+          >
+
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="headline">Confirmar Exclusão</v-card-title>
+              <v-card-text>
+                Tem certeza de que deseja excluir este aluno?
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="tertiary" text @click="dialogDelete = false"
+                  >Cancelar</v-btn
+                >
+                <v-btn color="error" text @click="confirmDelete(item)"
+                  >Confirmar</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </template>
+      </v-data-table-server>
+    </v-container>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -84,28 +97,51 @@ const headers = [
 ];
 
 const currentPage = ref(1);
+const loading = ref(false);
 const itemsPerPage = ref(10);
 const totalStudents = ref(0);
 const students = ref<Student[]>([]);
 const dialogDelete = ref(false);
 
-const fetchStudents = async () => {
+const fetchStudents = async ({ page = 1, itemsPerPage, sortBy }) => {
+  loading.value = true;
   try {
+    students.value = [];
     const response = await studentService.list(
-      currentPage.value,
-      itemsPerPage.value,
+      page,
+      itemsPerPage,
       search.value
     );
-    students.value = response;
-    totalStudents.value = response.length;
+    students.value = response.students;
+    totalStudents.value = response.total;
   } catch (error) {
-    console.error("Error fetching students", error);
+    snackbar.show({
+      message: "Erro ao listar alunos!",
+      color: "error",
+    });
   }
+  loading.value = false;
 };
 
-const createStudent = () => {
-  router.push("/students/new");
+const debounce = (func, delay) => {
+  let timerId;
+  return (...args) => {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
 };
+
+const handleInput = debounce((event) => {
+  search.value = event.target._value;
+
+  fetchStudents({
+    page: 1,
+    itemsPerPage: itemsPerPage,
+    sortBy: "",
+  });
+}, 600);
 
 const editStudent = (student: Student) => {
   router.push(`/students/${student.ra}`);
@@ -136,8 +172,6 @@ const filterData = () => {
   currentPage.value = 1;
   fetchStudents();
 };
-
-fetchStudents();
 
 interface Student {
   ra: string;

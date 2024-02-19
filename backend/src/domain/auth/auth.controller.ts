@@ -15,6 +15,6 @@ export class AuthController {
   @Post('validate')
   @UseGuards(AuthGuard)
   async validateToken() {
-    return 'valid token'
+    return { valid: true }
   }
 }

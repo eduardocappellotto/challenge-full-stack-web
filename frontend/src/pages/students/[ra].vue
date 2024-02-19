@@ -118,7 +118,10 @@ onMounted(async () => {
       name.value = fetchedStudent.name;
       email.value = fetchedStudent.email;
     } catch (error) {
-      console.error("Error fetching student", error);
+      snackbar.show({
+        message: "Erro ao carregar aluno!",
+        color: "error",
+      });
     }
   }
 });
@@ -137,7 +140,8 @@ const saveStudent = handleSubmit(async () => {
         message: "Aluno salvo com sucesso!",
         color: "success",
       });
-    } else {
+    }
+    if (!isNewStudent) {
       await studentService.update(ra.value, {
         ra: ra.value,
         cpf: cpf.value,
@@ -152,7 +156,10 @@ const saveStudent = handleSubmit(async () => {
     }
     router.push("/dashboard");
   } catch (error) {
-    console.error("Error saving student", error);
+    snackbar.show({
+      message: "Erro ao salvar aluno!",
+      color: "error",
+    });
   }
 });
 </script>

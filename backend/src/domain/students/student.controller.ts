@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { Student } from './entitites/student.entity';
 
 @Controller('students')
 @UseGuards(AuthGuard)
@@ -15,8 +16,12 @@ export class StudentController {
   }
 
   @Get()
-  async findAll() {
-    return this.studentService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('perPage') perPage: number = 10,
+    @Query('search') search: string = ''
+  ): Promise<{ students: Student[]; total: number }> {
+    return this.studentService.findAll(page, perPage, search);
   }
 
   @Get(':ra')
