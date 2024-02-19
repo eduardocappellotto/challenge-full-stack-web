@@ -26,13 +26,13 @@
         <v-list-item
           prepend-icon="mdi-home-city"
           title="Alunos"
-          @click="navigateTo('/alunos')"
+          @click="navigateTo('/students')"
         ></v-list-item>
         <v-list-item
           v-if="isLoggedIn"
           prepend-icon="mdi-logout"
           title="Logout"
-          @click="logout"
+          @click="logoutFlux"
         ></v-list-item>
       </v-list>
     </template>
@@ -51,40 +51,31 @@
           ></v-btn>
         </template>
       </v-list-item>
-      <v-list-item @click="navigateTo('/login')" nav>
-        <v-divider></v-divider>
-        <v-list dense nav>
-          <v-list-item prepend-icon="mdi-login" title="Login"></v-list-item>
-        </v-list>
-      </v-list-item>
     </template>
   </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { useAppStore } from "../../store/app";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+
+const store = useAppStore();
+const { logout } = store;
+const { isLoggedIn, user } = storeToRefs(store);
 
 const drawer = ref(true);
 const rail = ref(true);
 
-const isLoggedIn = ref(false);
-
-const user = ref({
-  username: "Eduardo Cappellotto",
-});
-
 const router = useRouter();
-
-const login = () => {
-  isLoggedIn.value = true;
-};
-
-const logout = () => {
-  isLoggedIn.value = false;
-};
 
 const navigateTo = (path: string) => {
   router.push(path);
+};
+
+const logoutFlux = () => {
+  logout();
+  router.push("/login");
 };
 </script>

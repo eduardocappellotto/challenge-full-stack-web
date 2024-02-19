@@ -8,6 +8,8 @@ import { User } from './domain/users/entitites/user.entity';
 import { UserModule } from './domain/users/user.module';
 
 import { AuthModule } from './domain/auth/auth.module';
+import { StudentModule } from './domain/students/student.module';
+import { Student } from './domain/students/entitites/student.entity';
 
 
 @Module({
@@ -15,16 +17,18 @@ import { AuthModule } from './domain/auth/auth.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'db',
       port: 5432,
       username: String(appConfig().DB_USER),
       password: String(appConfig().DB_PASSWORD),
       database: appConfig().DB_NAME,
-      entities: [User],
+      entities: [User, Student],
       logging: true,
     }),
     AuthModule,
-    UserModule],
+    UserModule,
+    StudentModule
+  ],
   controllers: [],
   providers: [],
 })

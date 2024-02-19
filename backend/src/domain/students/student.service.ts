@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Student } from './entitites/student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -17,8 +17,25 @@ export class StudentService {
         return await this.studentRepository.save(student);
     }
 
-    async findAll(): Promise<Student[]> {
-        return await this.studentRepository.find();
+    async findAll(page: number, perPage: number, search: string): Promise<{ students: Student[]; total: number }> {
+        const skip = (page - 1) * perPage;
+        const take = perPage;
+        let whereClause = {};
+
+        if (search) {
+            whereClause = {
+                where: [
+                    { ra: Like(`%${search}%`) },
+                    { name: Like(`%${search}%`) },
+                    { email: Like(`%${search}%`) },
+                    { cpf: Like(`%${search}%`) },
+                ],
+            };
+        }
+
+        const [students, total] = await this.studentRepository.findAndCount({ ...whereClause, skip, take });
+
+        return { students, total }
     }
 
     async findOne(ra: string): Promise<Student> {

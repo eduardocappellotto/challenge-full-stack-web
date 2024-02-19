@@ -1,6 +1,8 @@
 import { Entity, PrimaryColumn, Column, DeleteDateColumn } from 'typeorm';
 
-@Entity()
+const ENTITY_TABLE_NAME = "students"
+
+@Entity({ name: ENTITY_TABLE_NAME })
 export class Student {
     @PrimaryColumn({ length: 20 })
     ra: string;
