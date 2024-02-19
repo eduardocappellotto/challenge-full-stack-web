@@ -1,18 +1,13 @@
 version: "3.8"
 
 services:
-  db:
-    image: postgres
-    restart: always
+  frontend:
+    build:
+      context: ./frontend
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 8jmcn2v45rmjgwr5l6o8uzry9sgj0dtbohf1uz75vh29tmcdvs
-      POSTGRES_DB: database
-    volumes:
-      - ./infra/postgreSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: ["postgres", "-c", "max_connections=300"]
+      - "8080:8080"
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -20,16 +15,20 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      - database
     environment:
       JWT_SECRET: c130e1ae1e78fed13f55a30c0bed23f57863526e437dc6067b6ef4c3ca238cc0
       DB_USER: admin
       DB_PASSWORD: 8jmcn2v45rmjgwr5l6o8uzry9sgj0dtbohf1uz75vh29tmcdvs
       DB_NAME: database
-    command: ["npm", "run", "start"]
 
-  frontend:
-    build:
-      context: ./frontend
+  database:
+    image: postgres
     ports:
-      - "8000:8000"
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 8jmcn2v45rmjgwr5l6o8uzry9sgj0dtbohf1uz75vh29tmcdvs
+      POSTGRES_DB: database
+    volumes:
+      - ./infra/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
