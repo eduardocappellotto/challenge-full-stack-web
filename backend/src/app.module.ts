@@ -17,7 +17,7 @@ import { Student } from './domain/students/entitites/student.entity';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'db',
       port: 5432,
       username: String(appConfig().DB_USER),
       password: String(appConfig().DB_PASSWORD),
